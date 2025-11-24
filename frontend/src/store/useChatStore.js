@@ -20,8 +20,8 @@ export const useChatStore = create((set) => ({
       set({ isUsersLoading: false });
     }
   },
-    getMessages: async (userId) => {    
-    set({ isMessagesLoading: true });   
+  getMessages: async (userId) => {
+    set({ isMessagesLoading: true });
     try {
       const response = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: response.data });
@@ -30,4 +30,7 @@ export const useChatStore = create((set) => ({
     } finally {
       set({ isMessagesLoading: false });
     }
+  },
+
+  setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));
