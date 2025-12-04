@@ -2,13 +2,13 @@ import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 
 import cloudinary from "../lib/cloudinary.js";
-// import { getReceiverSocketId, io } from "../lib/socket.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
     const filteredUsers = await User.find({
-       _id: { $ne: loggedInUserId },
+      _id: { $ne: loggedInUserId },
     }).select("-password");
 
     res.status(200).json(filteredUsers);
@@ -51,7 +51,7 @@ export const sendMessage = async (req, res) => {
     }
 
     const newMessage = new Message({
-      senderId, 
+      senderId,
       receiverId,
       text,
       image: imageUrl,
@@ -59,10 +59,10 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    // const receiverSocketId = getReceiverSocketId(receiverId);
-    // if (receiverSocketId) {
-    //   io.to(receiverSocketId).emit("newMessage", newMessage);
-    // }
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {
